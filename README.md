@@ -5,8 +5,8 @@
 - Eslint configured
 
 ## Backend
-- Lang: Typescript
-- Using: Express.js
-- Test: jest
-- Eslint configured
-- Ratelimit + logger seted up
+
+## Microservices
+
+
+sam2: https://huggingface.co/facebook/sam2.1-hiera-large
