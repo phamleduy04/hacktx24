@@ -1,12 +1,2 @@
-## Frontend
-- Lang: Typescript
-- Using: React + Vite (With router supported)
-- Test: Vitest
-- Eslint configured
+## Server
 
-## Backend
-- Lang: Typescript
-- Using: Express.js
-- Test: jest
-- Eslint configured
-- Ratelimit + logger seted up
