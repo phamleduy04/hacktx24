@@ -62,4 +62,7 @@ def post_question(question_response: QuestionResponse):
         }
     
     except Exception as e:
-        return str(e)
+        return {
+            "response": str(e),
+            "img": ""
+        }

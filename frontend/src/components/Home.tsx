@@ -60,7 +60,7 @@ export const Home: React.FC = () => {
         setQuery("");
         setIsResponding(true);
 
-        fetch("http://localhost:8000/question", {
+        fetch("http://localhost:8765/question", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
