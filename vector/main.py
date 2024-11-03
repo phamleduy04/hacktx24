@@ -56,7 +56,10 @@ def post_question(question_response: QuestionResponse):
         # call the model to get a friendly response
         response = get_friendly_response(results, question)
     
-        return response
+        return {
+            "response": response,
+            "img": results[0][2]
+        }
     
     except Exception as e:
         return str(e)

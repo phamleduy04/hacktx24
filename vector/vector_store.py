@@ -9,8 +9,8 @@ import base64
 encoded_string = ""
 
 # read img from dog.jpg and convert to base64
-# with open("dog.jpg", "rb") as image_file:
-#     encoded_string = base64.b64encode(image_file.read()).decode("utf-8")
+with open("dog.jpg", "rb") as image_file:
+    encoded_string = "data:image/jpeg;base64," + base64.b64encode(image_file.read()).decode("utf-8")
 
 # Load a pre-trained sentence transformer model. This model's output vectors are of size 384
 model = SentenceTransformer('all-MiniLM-L6-v2')
