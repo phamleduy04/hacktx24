@@ -3,8 +3,18 @@ from fastapi.responses import JSONResponse
 import numpy as np
 import cv2
 from image_processor import get_json_result, pre_process_frame
+from fastapi.middleware.cors import CORSMiddleware
+
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.post("/process_image/")
 async def process_uploaded_image(file: UploadFile = File(...)):
