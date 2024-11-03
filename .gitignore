@@ -3,3 +3,4 @@ coverage
 hidden.txt
 venv
 yolo11s.pt
+__pycache__
