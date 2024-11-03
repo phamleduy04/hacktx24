@@ -1,6 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
+import { Toaster } from "@/components/ui/toaster";
+import { useToast } from "@/hooks/use-toast";
+import Webcam from "react-webcam";
 
 type Chat = {
     sender: string;
@@ -8,6 +11,12 @@ type Chat = {
     img?: string | null;
     timestamp?: string; // HH:MM AM/PM
 };
+
+interface Detection {
+    tracker_id: number;
+    text: string;
+    xyxy: [number, number, number, number]; // [x1, y1, x2, y2] format
+}
 
 export const Home: React.FC = () => {
     const [query, setQuery] = useState<string>("");
@@ -20,6 +29,11 @@ export const Home: React.FC = () => {
     const [isAtTop, setIsAtTop] = useState<boolean>(true);
 
     const [isResponding, setIsResponding] = useState<boolean>(false);
+    const webcamRef = useRef<Webcam>(null);
+    const canvasRef = useRef<HTMLCanvasElement>(null);
+    const [detection, setDetection] = useState<Detection[]>([]);
+    const [isImageProcessing, setImageProcessing] = useState<boolean>(false);
+    const { toast } = useToast();
 
     const pushChat = (sender: string, message: string, img?: string | null) => {
         setChats((prev) => [...prev, { sender, message, img, timestamp: new Date().toLocaleTimeString() }]);
@@ -80,33 +94,98 @@ export const Home: React.FC = () => {
             })
 
     };
+    // Capture the webcam feed, convert it to FormData, and send it to the detection API
+    const capture = useCallback(async () => {
+        if (!webcamRef.current) return;
+        const imageSrc = webcamRef.current.getScreenshot({ width: 640, height: 480 });
+        if (imageSrc) setImageSrc(imageSrc); // Display the latest image in your component
+        setImageProcessing(true);
+
+        // Convert base64 image to Blob
+        const blob = await (await fetch(imageSrc!)).blob();
+
+        // Create FormData and append the blob as a file
+        const formData = new FormData();
+        formData.append("file", blob, "image.jpg"); // The name "file" should match the expected key in your API
+
+        // Send the FormData to your API
+        const response = await fetch("https://microservices.hacktx24.tech/process_image/", {
+            method: "POST",
+            body: formData,
+        });
+
+        const data: Detection[] = await response.json();
+        toast({
+            title: `#${data[0].tracker_id} detected`,
+            description: data[0].text
+        })
+        console.log(data);
+        setDetection(data); // Assume API returns an array of coordinates
+        setImageProcessing(false);
+    }, [webcamRef, toast]);
+
+    // Draw detection boxes based on returned data
+    const drawRectangles = useCallback(() => {
+        if (detection.length && canvasRef.current && webcamRef.current) {
+            const canvas = canvasRef.current;
+            const context = canvas.getContext("2d");
+
+            if (context) {
+                // Clear previous drawings
+                context.clearRect(0, 0, canvas.width, canvas.height);
+
+                const video = webcamRef.current.video!;
+                const videoWidth = video.videoWidth;
+                const videoHeight = video.videoHeight;
+
+                // Set canvas dimensions to match the video dimensions
+                canvas.width = videoWidth;
+                canvas.height = videoHeight;
+
+                // Scale and position each detection based on video dimensions
+                detection.forEach(({ tracker_id, text, xyxy }) => {
+                    const [x1, y1, x2, y2] = xyxy;
+
+                    // Calculate scaled coordinates
+                    const boxX = x1 * videoWidth;
+                    const boxY = y1 * videoHeight;
+                    const boxWidth = (x2 - x1) * videoWidth;
+                    const boxHeight = (y2 - y1) * videoHeight;
+
+                    // Draw bounding box
+                    context.beginPath();
+                    context.rect(boxX, boxY, boxWidth, boxHeight);
+                    context.lineWidth = 2;
+                    context.strokeStyle = "red";
+                    context.stroke();
+
+                    // Draw text label
+                    context.fillStyle = "yellow";
+                    context.font = "16px Arial";
+                    context.fillText(`${text} (ID: ${tracker_id})`, boxX, boxY - 10);
+                });
+            }
+        }
+    }, [detection]);
 
     useEffect(() => {
-        const ws = new WebSocket("ws://localhost:8000");
+        const interval = setInterval(() => {
+            capture();
+        }, 500); // Adjust capture frequency as needed
 
-        ws.onopen = () => {
-            console.log("WebSocket connection established");
-        };
+        return () => clearInterval(interval);
+    }, [capture]);
 
-        ws.onmessage = (event) => {
-            const image = event.data;
-            setImageSrc(`data:image/jpeg;base64,${image}`);
-        }
+    useEffect(() => {
+        drawRectangles();
+    }, [detection, drawRectangles]);
 
-        ws.onclose = () => {
-            console.log("WebSocket connection closed");
-        };
-
-        return () => {
-            ws.close();
-        };
-    }, []);
 
     return (
         <div className="flex flex-col justify-start items-center h-screen max-h-screen overflow-hidden bg-gradient-to-br from-blue-500 to-purple-600">
             <h1 className="text-center text-5xl font-extrabold mb-6 text-yellow-300 mt-10">SUS DETECTOR</h1>
 
-            <div className="w-full max-w-xl h-80 mb-2">
+            {/* <div className="w-full max-w-xl h-80 mb-2">
                 {imageSrc ? <img
                     src={imageSrc}
                     alt="Live Stream"
@@ -114,6 +193,30 @@ export const Home: React.FC = () => {
                 /> : <div className="w-full h-full bg-gray-800 flex justify-center items-center rounded-lg animate-pulse">
                     <p className="text-yellow-300">Connecting...</p>
                 </div>}
+            </div> */}
+
+            <div className="w-full max-w-xl h-80 mb-2 relative">
+                <Webcam
+                    audio={false}
+                    ref={webcamRef}
+                    screenshotFormat="image/jpeg"
+                    className="w-full h-full object-cover rounded-lg"
+                    videoConstraints={{
+                        width: 640,
+                        height: 480,
+                    }}
+                />
+                <canvas
+                    ref={canvasRef}
+                    className="w-full h-full object-cover rounded-lg"
+                    style={{
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                        zIndex: 10, // Ensures the canvas is on top
+                        overflow: 'visible'
+                    }}
+                />
             </div>
 
             {/* {info != "" && <div className="p-4 bg-gray-800 border border-yellow-500 rounded-lg mt-4">
@@ -164,6 +267,7 @@ export const Home: React.FC = () => {
                     </Button>
                 </form>
             </div>
+            <Toaster />
         </div>
     );
 };
