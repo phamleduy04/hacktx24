@@ -9,13 +9,13 @@ app = FastAPI()
 
 def get_keywords(question: str) -> str:
     # make a post request to localhost:8000/chat
-    response = requests.post("http://localhost:8000/chat", data={"question": question})
+    response = requests.post("http://localhost:3000/chat", data={"question": question})
     # return the response
     return response.text
 
 def get_friendly_response(db_descriptions) -> str:
     # make a post request to localhost:8000/chat
-    response = requests.post("http://localhost:8000/chat", data={"db_descriptions": db_descriptions})
+    response = requests.post("http://localhost:3000/chat", data={"db_descriptions": db_descriptions})
     # return the response
     return response.text
 

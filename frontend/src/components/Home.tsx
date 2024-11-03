@@ -8,7 +8,7 @@ type Chat = {
 
 export const Home: React.FC = () => {
     const [query, setQuery] = useState<string>("");
-    const [info, setInfo] = useState<string>("");
+    // const [info, setInfo] = useState<string>("");
     const [chats, setChats] = useState<Chat[]>([]);
     const [imageSrc, setImageSrc] = useState<string>("");
 
@@ -17,9 +17,25 @@ export const Home: React.FC = () => {
     };
 
     const handleDetect = () => {
-        setInfo(`${query}`); // something happens here
+        // setInfo(`${query}`); // something happens here
         pushChat("user", query);
         setQuery("");
+
+        fetch("http://localhost:8000/question", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ query }),
+        })
+            .then((res) => res.json())
+            .then((data) => {
+                pushChat("bot", data.message);
+            })
+            .catch((err) => {
+                console.error(err);
+            })
+
     };
 
     useEffect(() => {
@@ -74,7 +90,7 @@ export const Home: React.FC = () => {
             {chats.length > 0 && <div className="gap-1 flex flex-col w-full h-full overflow-auto scroll max-w-xl mt-4 mb-4">
                 {chats.map((chat, index) => (
                     <div key={index} className="flex flex-row w-full">
-                        {chat.sender === "user" && <div className="w-full"/>}
+                        {chat.sender === "user" && <div className="w-full" />}
                         <div className={`p-4 bg-gray-800 flex-grow border w-max min-w-max border-yellow-500 rounded-lg animate-in-up ${chat.sender === "bot" ? "ml-auto" : ""}`}>
                             <p className="text-yellow-300">{chat.message}</p>
                         </div>
