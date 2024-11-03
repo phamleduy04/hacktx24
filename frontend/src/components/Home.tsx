@@ -23,10 +23,11 @@ export const Home: React.FC = () => {
 
         fetch("http://localhost:8000/question", {
             method: "POST",
+            mode: "no-cors",
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ query }),
+            body: JSON.stringify({ "question": query }),
         })
             .then((res) => res.json())
             .then((data) => {

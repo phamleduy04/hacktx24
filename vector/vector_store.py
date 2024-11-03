@@ -6,7 +6,7 @@ from sentence_transformers import SentenceTransformer
 
 # Load a pre-trained sentence transformer model. This model's output vectors are of size 384
 model = SentenceTransformer('all-MiniLM-L6-v2')
-
+client = None
 
 def connect():
     username = 'demo'
@@ -20,7 +20,7 @@ def connect():
     return None, conn
 
 
-def reset_table():
+def reset_table(conn):
     # Load
     try:
         sql = """
@@ -43,7 +43,7 @@ def reset_table():
         """
     result = conn.execute(text(sql))
 
-def insert_data(image_id: int, image_link: str, description: str, vector=None):
+def insert_data(conn, image_id: int, image_link: str, description: str, vector=None):
 
     if vector == None:
         vector = model.encode(description, normalize_embeddings=True).tolist()
@@ -62,7 +62,7 @@ def insert_data(image_id: int, image_link: str, description: str, vector=None):
     })
 
 
-def read_all_data():
+def read_all_data(conn):
     # get all data
     sql = """
     SELECT * FROM data
@@ -72,7 +72,7 @@ def read_all_data():
     print(result.fetchall())
 
 
-def search_by(description):
+def search_by(conn, description):
     # search by description
     # This is our search phrase
 
@@ -84,7 +84,7 @@ def search_by(description):
 
     # Define the SQL query with placeholders for the vector and limit
     sql = f"""
-    SELECT TOP {limit} image_id, image_link, description, date_created
+    SELECT TOP {limit} image_id, description
     FROM data
     ORDER BY VECTOR_DOT_PRODUCT(description_vector, TO_VECTOR(:searchVector)) DESC
 """
@@ -102,20 +102,26 @@ def search_by(description):
     return results
 
 
-client, conn = connect()
-reset_table()
-#insert_data(1, 'https://www.google.com', 'A picture of a cat')
-#insert_data(2, 'https://www.google.com', 'A picture of a dog')
-#insert_data(3, 'https://www.google.com', 'A picture of a tiger')
-insert_data(4, 'https://www.google.com', 'At 3:45 PM, The person is wearing a black short sleeve shirt and gray trousers.')
-insert_data(5, 'https://www.google.com', 'At 3:45 PM, The person is wearing a green long sleeve shirt and black pants.')
-insert_data(6, 'https://www.google.com', 'At 4:20 PM, The person is wearing a white short sleeve shirt and pink trousers.')
-insert_data(7, 'https://www.google.com', 'At 10:15 PM, The person is wearing a blue long sleeve shirt and cyan pants.')
-insert_data(8, 'https://www.google.com', 'At 1:30 PM, The person is wearing a violet short sleeve shirt and yellow trousers.')
-insert_data(9, 'https://www.google.com', 'At 6:00 PM, The person is wearing a orange long sleeve shirt and indigo pants.')
-insert_data(10, 'https://www.google.com', 'At 9:15 AM, The person is wearing a red short sleeve shirt and white trousers.')
+def start_server():
+    print("Starting server")
+    
+    client, conn = connect()
+
+    reset_table(conn)
+    #insert_data(1, 'https://www.google.com', 'A picture of a cat')
+    #insert_data(2, 'https://www.google.com', 'A picture of a dog')
+    #insert_data(3, 'https://www.google.com', 'A picture of a tiger')
+    insert_data(conn, 4, 'https://www.google.com', 'At 3:45 PM, The person is wearing a black short sleeve shirt and gray trousers.')
+    insert_data(conn, 5, 'https://www.google.com', 'At 3:45 PM, The person is wearing a green long sleeve shirt and black pants.')
+    insert_data(conn, 6, 'https://www.google.com', 'At 4:20 PM, The person is wearing a white short sleeve shirt and pink trousers.')
+    insert_data(conn, 7, 'https://www.google.com', 'At 10:15 PM, The person is wearing a blue long sleeve shirt and cyan pants.')
+    insert_data(conn, 8, 'https://www.google.com', 'At 1:30 PM, The person is wearing a violet short sleeve shirt and yellow trousers.')
+    insert_data(conn, 9, 'https://www.google.com', 'At 6:00 PM, The person is wearing a orange long sleeve shirt and indigo pants.')
+    insert_data(conn, 10, 'https://www.google.com', 'At 9:15 AM, The person is wearing a red short sleeve shirt and white trousers.')
 
 
-# read_all_data()
+    # read_all_data()
 
-search_by('3:45 PM')
+    search_by(conn, '3:45 PM')
+    
+    return conn
