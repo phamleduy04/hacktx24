@@ -1,10 +1,8 @@
 from typing import Union
 import requests
-
 from pydantic import BaseModel
-
 from fastapi import FastAPI
-
+from datetime import datetime
 from vector_store import search_by, start_server, insert_data
 
 from fastapi.middleware.cors import CORSMiddleware
@@ -75,9 +73,24 @@ class VectorResponse(BaseModel):
 @app.post("/vector")
 def save_to_vector_db(vector_response: VectorResponse):
     
-    print(vector_response)
+    try:
     
-    insert_data(conn, vector_response.id, vector_response.img, vector_response.description)
+        print(vector_response)
+        
+        # get time HH:MM AM/PM
+        now = datetime.now()
+        current_time = now.strftime("%H:%M %p")
+        
+        modified_desc = f"At {current_time}, {vector_response.description}"
+        
+        print(modified_desc)
+        
+        insert_data(conn, vector_response.id, vector_response.img, modified_desc)
+        
+    except Exception as e:
+        return {
+            "response": str(e)
+        }
     
     return {
         "response": "Success"
