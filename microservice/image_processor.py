@@ -53,7 +53,7 @@ def process_image(frame: np.ndarray):
             "class_id": int(class_id),
             "confidence": float(confidence),
             "xyxy": xyxy.tolist(),
-            "clothes": clothes[tracker_id]
+            "clothes": clothes[tracker_id].tolist()
         })
 
     return box_data
