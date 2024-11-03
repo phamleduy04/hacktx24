@@ -3,3 +3,6 @@ ultralytics
 fastapi
 uvicorn
 python-multipart
+matplotlib
+PIL
+webcolors

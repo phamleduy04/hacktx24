@@ -2,7 +2,7 @@ from fastapi import FastAPI, File, UploadFile
 from fastapi.responses import JSONResponse
 import numpy as np
 import cv2
-from image_processor import process_image
+from image_processor import detect_and_track_people
 
 app = FastAPI()
 
@@ -14,7 +14,7 @@ async def process_uploaded_image(file: UploadFile = File(...)):
     frame = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
 
     # Process the image
-    box_data = process_image(frame)
+    box_data = detect_and_track_people(frame)
 
     return JSONResponse(content=box_data)
 
