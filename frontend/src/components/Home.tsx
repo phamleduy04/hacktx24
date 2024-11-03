@@ -6,6 +6,7 @@ type Chat = {
     sender: string;
     message: string;
     img?: string | null;
+    timestamp?: string; // HH:MM AM/PM
 };
 
 export const Home: React.FC = () => {
@@ -21,7 +22,7 @@ export const Home: React.FC = () => {
     const [isResponding, setIsResponding] = useState<boolean>(false);
 
     const pushChat = (sender: string, message: string, img?: string | null) => {
-        setChats((prev) => [...prev, { sender, message, img }]);
+        setChats((prev) => [...prev, { sender, message, img, timestamp: new Date().toLocaleTimeString() }]);
         setTimeout(() => {
             chatRef.current?.scrollTo({
                 top: chatRef.current.scrollHeight,
@@ -129,6 +130,7 @@ export const Home: React.FC = () => {
                                 {chat.sender === "user" && <div className="min-w-10" />}
                                 <div className={`p-4 bg-gray-800 border max-w-full w-max text-wrap border-yellow-500 rounded-lg animate-in-up ${chat.sender === "bot" ? "ml-auto" : ""}`}>
                                     <p className="text-yellow-300">{chat.message}</p>
+                                    <p className={cn("text-yellow-300 w-full text-sm opacity-65", chat.sender === "bot" ? "text-left" : "text-right")}>{chat.sender === "bot" ? "Bot" : "You"} {chat.timestamp}</p>
                                 </div>
                                 {chat.sender !== "user" && <div className="min-w-10" />}
                             </div>
