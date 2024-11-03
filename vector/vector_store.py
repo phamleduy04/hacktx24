@@ -1,4 +1,3 @@
-import together
 from sqlalchemy import create_engine, text
 import requests
 
