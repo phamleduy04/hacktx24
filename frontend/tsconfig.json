@@ -6,6 +6,7 @@
   ],
   /* Paths */
   "compilerOptions": {
+    "types":["mocha"],
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
