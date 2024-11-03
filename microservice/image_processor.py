@@ -153,6 +153,32 @@ def detect_and_track_people(frame: np.ndarray) -> np.ndarray:
 
     return box_data
 
+def get_json_result(frame: np.ndarray):
+    detect_res = detect_model(frame)[0]
+    detections = sv.Detections.from_ultralytics(detect_res)
+    detections = detections[detections.class_id == 0]
+    detections = detections[detections.confidence > 0.5]
+    detections = tracker.update_with_detections(detections)
+
+    clothes = {}
+    normalized_coords = {}
+    #Crop the detected images and save
+    for xyxy, mask, confidence, class_id, tracker_id, data in detections:
+        #Segment each of the cropped image
+        cropped_img = sv.crop_image(image=frame, xyxy=xyxy)
+        
+        clothes[tracker_id] = detect_clothes(cropped_img)
+        coords = [ x_y / frame.shape[i % 2 == 0] for i, x_y in enumerate(xyxy)]
+        normalized_coords[tracker_id] = coords   
+    
+    labels = [
+        f"{detect_res.names[class_id]} #{tracker_id} {clothes[tracker_id]} {normalized_coords[tracker_id]}"
+        for class_id, tracker_id
+        in zip(detections.class_id, detections.tracker_id)
+    ]
+
+    return labels
+
 def pre_process_frame(frame: np.ndarray):
     #Make it brighter
     frame = cv2.convertScaleAbs(frame, alpha=1.2, beta=0)
