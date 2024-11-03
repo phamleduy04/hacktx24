@@ -2,6 +2,8 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import React, { useState, useEffect } from "react";
 
+// import {markdown} from 'markdown';
+
 type Chat = {
     sender: string;
     message: string;
@@ -60,7 +62,7 @@ export const Home: React.FC = () => {
         setQuery("");
         setIsResponding(true);
 
-        fetch("http://localhost:8765/question", {
+        fetch("https://vectorapi.hacktx24.tech/question", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
