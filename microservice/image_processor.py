@@ -1,9 +1,12 @@
 import cv2
 import webcolors
 import numpy as np
+import requests
 import supervision as sv
 from ultralytics import YOLO
 from dominant_color import DominantColor
+
+from base64 import b64encode
 
 detect_model = YOLO("yolo11s.pt")
 clothes_model = YOLO("best.pt")
@@ -169,14 +172,25 @@ def get_json_result(frame: np.ndarray):
         #Segment each of the cropped image
         cropped_img = sv.crop_image(image=frame, xyxy=xyxy)
         
+        # convert ndarray to base64 string in format "data:image/jpeg;base64,...."
+        # base64_img = sv.ndarray_to_base64(cropped_img) # does not exist
+        base64_img = "data:image/jpeg;base64," + b64encode(cv2.imencode('.jpg', cropped_img)[1]).decode()
+        
+        
+        
         clothes[tracker_id] = detect_clothes(cropped_img)
         coords = [ x_y / frame.shape[i % 2 == 0] for i, x_y in enumerate(xyxy)]
         normalized_coords[tracker_id] = coords   
+        
+        # add to vector store db
+        requests.post("https://vectorapi.hacktx24.tech/vector", json={"id": int(tracker_id), "img": base64_img, "description": f"{detect_res.names[class_id]} #{tracker_id} {clothes[tracker_id]}"})
     
     result = []
     for class_id, tracker_id in zip(detections.class_id, detections.tracker_id):
         text = f"{detect_res.names[class_id]} #{tracker_id} {clothes[tracker_id]}"
         xyxy = [float(coord) for coord in normalized_coords[tracker_id]]  # Convert coordinates to standard floats
+        
+        
 
         result.append({
             "tracker_id": int(tracker_id),

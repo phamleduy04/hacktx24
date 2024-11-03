@@ -1,5 +1,6 @@
 from sqlalchemy import create_engine, text
 import requests
+import random
 
 from sentence_transformers import SentenceTransformer
 
@@ -41,32 +42,64 @@ def reset_table(conn):
     # Load
     sql = """
         CREATE TABLE data (
-        image_id INT PRIMARY KEY,
+        id INT PRIMARY KEY,
+        person_id INT,
         date_created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        base_64_image LONGTEXT,
         description VARCHAR(2000),
         description_vector VECTOR(DOUBLE, 384)
         )
         """
     result = conn.execute(text(sql))
+    
+    try:
+        sql = """
+        DROP TABLE imgs
+        """
+        result = conn.execute(text(sql))
+        # print(result)
+    except Exception as e:
+        print("Table does not exist")
 
-def insert_data(conn, image_id: int, base_64_image: str, description: str, vector=None):
+    # Load
+    sql = """
+        CREATE TABLE imgs (
+        person_id INT PRIMARY KEY,
+        base_64_image LONGTEXT
+        )
+        """
+    result = conn.execute(text(sql))
+
+def insert_data(conn, person_id: int, base_64_image: str, description: str, vector=None):
 
     if vector == None:
         vector = model.encode(description, normalize_embeddings=True).tolist()
 
     sql = text("""
         INSERT INTO data
-        (image_id, base_64_image, description, description_vector)
-        VALUES (:image_id, :base_64_image, :description, TO_VECTOR(:description_vector))
+        (id, person_id, description, description_vector)
+        VALUES (:id, :person_id, :description, TO_VECTOR(:description_vector))
         """)
 
     result = conn.execute(sql, {
-        'image_id': image_id,
-        'base_64_image': base_64_image,
+        'id': random.randint(1, 1000000),
+        'person_id': person_id,
         'description': description,
         'description_vector': str(vector),
     })
+    
+    try:
+        sql = text("""
+        INSERT INTO imgs
+        (person_id, base_64_image)
+        VALUES (:person_id, :base_64_image)
+        """)
+
+        result = conn.execute(sql, {
+            'person_id': person_id,
+            'base_64_image': base_64_image,
+        })
+    except Exception as e:
+        print("Image already exists")
 
 
 def read_all_data(conn):
@@ -91,7 +124,7 @@ def search_by(conn, description):
 
     # Define the SQL query with placeholders for the vector and limit
     sql = f"""
-    SELECT TOP {limit} image_id, description, base_64_image
+    SELECT TOP {limit} person_id, description
     FROM data
     ORDER BY VECTOR_DOT_PRODUCT(description_vector, TO_VECTOR(:searchVector)) DESC
 """
@@ -103,10 +136,22 @@ def search_by(conn, description):
 
     # Fetch all results
     results = searchQuery.fetchall()
+    base64_images = []
+    
     for row in results:
+        # get image
+        sql = f"""
+        SELECT base_64_image
+        FROM imgs
+        WHERE person_id = :person_id
+        """
+        result = conn.execute(text(sql), {
+            'person_id': row[0],
+        })
+        base64_images.append(result.fetchone()[0])
         print(row)
         
-    return results
+    return [(row[0], row[1], base64_images[i]) for i, row in enumerate(results)]
 
 
 def start_server():
@@ -128,6 +173,7 @@ def start_server():
     # insert_data(conn, 11, encoded_string, 'At 11:45 AM, The person is wearing a black long sleeve shirt and gray pants.')
     
     insert_data(conn, 4, encoded_string, 'At 3:45 PM, Person #4 is wearing a black short sleeve shirt and gray trousers.')
+    insert_data(conn, 4, encoded_string, 'At 3:50 PM, Person #4 is wearing a black short sleeve shirt and gray trousers.')
     insert_data(conn, 5, encoded_string, 'At 4:20 PM, Person #5 is wearing a white long sleeve shirt and pink pants.')
     insert_data(conn, 6, encoded_string, 'At 10:15 PM, Person #6 is wearing a blue short sleeve shirt and cyan trousers.')
     insert_data(conn, 7, encoded_string, 'At 1:30 PM, Person #7 is wearing a violet long sleeve shirt and yellow pants.')
