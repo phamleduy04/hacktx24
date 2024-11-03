@@ -5,7 +5,7 @@ from pydantic import BaseModel
 
 from fastapi import FastAPI
 
-from vector_store import search_by, start_server
+from vector_store import search_by, start_server, insert_data
 
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -66,3 +66,16 @@ def post_question(question_response: QuestionResponse):
             "response": str(e),
             "img": ""
         }
+        
+class VectorResponse(BaseModel):
+    id: int
+    img: str
+    description: str
+
+@app.post("/vector")
+def save_to_vector_db(vector_response: VectorResponse):
+    insert_data(conn, vector_response.id, vector_response.img, vector_response.description)
+    
+    return {
+        "response": "Success"
+    }
