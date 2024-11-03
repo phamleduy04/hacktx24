@@ -143,6 +143,8 @@ def detect_and_track_people(frame: np.ndarray) -> np.ndarray:
     for xyxy, mask, confidence, class_id, tracker_id, data in detections:
         x1, y1, x2, y2 = xyxy
         normalized_xyxy = [x1 / image_width, y1 / image_height, x2 / image_width, y2 / image_height]
+        normalized_xyxy = [float(coord) for coord in normalized_xyxy]  # Convert coordinates to standard floats
+
         box_data.append({
             "tracker_id": int(tracker_id),
             "class_id": int(class_id),
@@ -174,7 +176,8 @@ def get_json_result(frame: np.ndarray):
     result = []
     for class_id, tracker_id in zip(detections.class_id, detections.tracker_id):
         text = f"{detect_res.names[class_id]} #{tracker_id} {clothes[tracker_id]}"
-        xyxy = normalized_coords[tracker_id]
+        xyxy = [float(coord) for coord in normalized_coords[tracker_id]]  # Convert coordinates to standard floats
+
         result.append({
             "text": text,
             "xyxy": xyxy
