@@ -98,6 +98,8 @@ def search_by(description):
     results = searchQuery.fetchall()
     for row in results:
         print(row)
+        
+    return results
 
 
 client, conn = connect()
