@@ -4,6 +4,14 @@ import requests
 
 from sentence_transformers import SentenceTransformer
 
+import base64
+
+encoded_string = ""
+
+# read img from dog.jpg and convert to base64
+# with open("dog.jpg", "rb") as image_file:
+#     encoded_string = base64.b64encode(image_file.read()).decode("utf-8")
+
 # Load a pre-trained sentence transformer model. This model's output vectors are of size 384
 model = SentenceTransformer('all-MiniLM-L6-v2')
 client = None
@@ -36,27 +44,27 @@ def reset_table(conn):
         CREATE TABLE data (
         image_id INT PRIMARY KEY,
         date_created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        image_link VARCHAR(2000),
+        base_64_image LONGTEXT,
         description VARCHAR(2000),
         description_vector VECTOR(DOUBLE, 384)
         )
         """
     result = conn.execute(text(sql))
 
-def insert_data(conn, image_id: int, image_link: str, description: str, vector=None):
+def insert_data(conn, image_id: int, base_64_image: str, description: str, vector=None):
 
     if vector == None:
         vector = model.encode(description, normalize_embeddings=True).tolist()
 
     sql = text("""
         INSERT INTO data
-        (image_id, image_link, description, description_vector)
-        VALUES (:image_id, :image_link, :description, TO_VECTOR(:description_vector))
+        (image_id, base_64_image, description, description_vector)
+        VALUES (:image_id, :base_64_image, :description, TO_VECTOR(:description_vector))
         """)
 
     result = conn.execute(sql, {
         'image_id': image_id,
-        'image_link': image_link,
+        'base_64_image': base_64_image,
         'description': description,
         'description_vector': str(vector),
     })
@@ -84,7 +92,7 @@ def search_by(conn, description):
 
     # Define the SQL query with placeholders for the vector and limit
     sql = f"""
-    SELECT TOP {limit} image_id, description
+    SELECT TOP {limit} image_id, description, base_64_image
     FROM data
     ORDER BY VECTOR_DOT_PRODUCT(description_vector, TO_VECTOR(:searchVector)) DESC
 """
@@ -111,13 +119,13 @@ def start_server():
     #insert_data(1, 'https://www.google.com', 'A picture of a cat')
     #insert_data(2, 'https://www.google.com', 'A picture of a dog')
     #insert_data(3, 'https://www.google.com', 'A picture of a tiger')
-    insert_data(conn, 4, 'https://www.google.com', 'At 3:45 PM, The person is wearing a black short sleeve shirt and gray trousers.')
-    insert_data(conn, 5, 'https://www.google.com', 'At 3:45 PM, The person is wearing a green long sleeve shirt and black pants.')
-    insert_data(conn, 6, 'https://www.google.com', 'At 4:20 PM, The person is wearing a white short sleeve shirt and pink trousers.')
-    insert_data(conn, 7, 'https://www.google.com', 'At 10:15 PM, The person is wearing a blue long sleeve shirt and cyan pants.')
-    insert_data(conn, 8, 'https://www.google.com', 'At 1:30 PM, The person is wearing a violet short sleeve shirt and yellow trousers.')
-    insert_data(conn, 9, 'https://www.google.com', 'At 6:00 PM, The person is wearing a orange long sleeve shirt and indigo pants.')
-    insert_data(conn, 10, 'https://www.google.com', 'At 9:15 AM, The person is wearing a red short sleeve shirt and white trousers.')
+    insert_data(conn, 4, encoded_string, 'At 3:45 PM, The person is wearing a black short sleeve shirt and gray trousers.')
+    insert_data(conn, 5, encoded_string, 'At 3:45 PM, The person is wearing a green long sleeve shirt and black pants.')
+    insert_data(conn, 6, encoded_string, 'At 4:20 PM, The person is wearing a white short sleeve shirt and pink trousers.')
+    insert_data(conn, 7, encoded_string, 'At 10:15 PM, The person is wearing a blue long sleeve shirt and cyan pants.')
+    insert_data(conn, 8, encoded_string, 'At 1:30 PM, The person is wearing a violet short sleeve shirt and yellow trousers.')
+    insert_data(conn, 9, encoded_string, 'At 6:00 PM, The person is wearing a orange long sleeve shirt and indigo pants.')
+    insert_data(conn, 10, encoded_string, 'At 9:15 AM, The person is wearing a red short sleeve shirt and white trousers.')
 
 
     # read_all_data()

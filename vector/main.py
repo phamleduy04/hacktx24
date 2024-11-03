@@ -7,9 +7,20 @@ from fastapi import FastAPI
 
 from vector_store import search_by, start_server
 
+from fastapi.middleware.cors import CORSMiddleware
+
 conn = start_server()
 
 app = FastAPI()
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 def get_keywords(question: str) -> str:
     # make a post request to localhost:8000/chat with the body
