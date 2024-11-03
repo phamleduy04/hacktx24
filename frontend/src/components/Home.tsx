@@ -75,6 +75,7 @@ export const Home: React.FC = () => {
             })
             .catch((err) => {
                 console.error(err);
+                pushChat("bot", "An error occurred while processing the request");
                 setIsResponding(false);
             })
 
@@ -130,7 +131,7 @@ export const Home: React.FC = () => {
                                 {chat.sender === "user" && <div className="min-w-10" />}
                                 <div className={`p-4 bg-gray-800 border max-w-full w-max text-wrap border-yellow-500 rounded-lg animate-in-up ${chat.sender === "bot" ? "ml-auto" : ""}`}>
                                     <p className="text-yellow-300">{chat.message}</p>
-                                    <p className={cn("text-yellow-300 w-full text-sm opacity-65", chat.sender === "bot" ? "text-left" : "text-right")}>{chat.sender === "bot" ? "Bot" : "You"} {chat.timestamp}</p>
+                                    <p className={cn("text-yellow-300 w-full text-sm opacity-65 mt-1", chat.sender === "bot" ? "text-left" : "text-right")}>{chat.sender === "bot" ? "Bot" : "You"} {chat.timestamp}</p>
                                 </div>
                                 {chat.sender !== "user" && <div className="min-w-10" />}
                             </div>
