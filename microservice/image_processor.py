@@ -3,7 +3,7 @@ import webcolors
 import numpy as np
 import supervision as sv
 from ultralytics import YOLO
-from .dominant_color import DoimantColor
+from dominant_color import DominantColor
 
 detect_model = YOLO("yolo11s.pt")
 clothes_model = YOLO("best.pt")
@@ -35,7 +35,7 @@ def closest_color(requested_color):
 
 def classify_color(cropped_frame):
     # Calculate the dominant color
-    dominant_color = DoimantColor(cropped_frame)
+    dominant_color = DominantColor(cropped_frame)
 
     print(dominant_color.rgb)
     
