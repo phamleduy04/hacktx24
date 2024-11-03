@@ -74,6 +74,9 @@ class VectorResponse(BaseModel):
 
 @app.post("/vector")
 def save_to_vector_db(vector_response: VectorResponse):
+    
+    print(vector_response)
+    
     insert_data(conn, vector_response.id, vector_response.img, vector_response.description)
     
     return {
