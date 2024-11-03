@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import React, { useState, useEffect } from "react";
 
-// import {markdown} from 'markdown';
+import { Marked } from '@ts-stack/markdown';
 
 type Chat = {
     sender: string;
@@ -62,7 +62,8 @@ export const Home: React.FC = () => {
         setQuery("");
         setIsResponding(true);
 
-        fetch("https://vectorapi.hacktx24.tech/question", {
+        // fetch("https://vectorapi.hacktx24.tech/question", {
+        fetch("http://localhost:8765/question", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -131,8 +132,8 @@ export const Home: React.FC = () => {
                         <>
                             <div key={index} className="flex flex-row justify-between w-full">
                                 {chat.sender === "user" && <div className="min-w-10" />}
-                                <div className={`p-4 bg-gray-800 border max-w-full w-max text-wrap border-yellow-500 rounded-lg animate-in-up ${chat.sender === "bot" ? "ml-auto" : ""}`}>
-                                    <p className="text-yellow-300">{chat.message}</p>
+                                <div className={`p-4 bg-gray-800 border max-w-full w-max text-wrap border-yellow-500 rounded-lg animate-in-up`}>
+                                    <p className="text-yellow-300" dangerouslySetInnerHTML={{ __html: Marked.parse(chat.message) }}/>
                                     <p className={cn("text-yellow-300 w-full text-sm opacity-65 mt-1", chat.sender === "bot" ? "text-left" : "text-right")}>{chat.sender === "bot" ? "Bot" : "You"} {chat.timestamp}</p>
                                 </div>
                                 {chat.sender !== "user" && <div className="min-w-10" />}
