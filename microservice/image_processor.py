@@ -179,6 +179,7 @@ def get_json_result(frame: np.ndarray):
         xyxy = [float(coord) for coord in normalized_coords[tracker_id]]  # Convert coordinates to standard floats
 
         result.append({
+            "tracker_id": int(tracker_id),
             "text": text,
             "xyxy": xyxy
         })
