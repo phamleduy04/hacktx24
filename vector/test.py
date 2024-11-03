@@ -102,9 +102,18 @@ def search_by(description):
 
 client, conn = connect()
 reset_table()
-insert_data(1, 'https://www.google.com', 'A picture of a cat')
-insert_data(2, 'https://www.google.com', 'A picture of a dog')
-insert_data(3, 'https://www.google.com', 'A picture of a tiger')
+#insert_data(1, 'https://www.google.com', 'A picture of a cat')
+#insert_data(2, 'https://www.google.com', 'A picture of a dog')
+#insert_data(3, 'https://www.google.com', 'A picture of a tiger')
+insert_data(4, 'https://www.google.com', 'At 3:45 PM, The person is wearing a black short sleeve shirt and gray trousers.')
+insert_data(5, 'https://www.google.com', 'At 3:45 PM, The person is wearing a green long sleeve shirt and black pants.')
+insert_data(6, 'https://www.google.com', 'At 4:20 PM, The person is wearing a white short sleeve shirt and pink trousers.')
+insert_data(7, 'https://www.google.com', 'At 10:15 PM, The person is wearing a blue long sleeve shirt and cyan pants.')
+insert_data(8, 'https://www.google.com', 'At 1:30 PM, The person is wearing a violet short sleeve shirt and yellow trousers.')
+insert_data(9, 'https://www.google.com', 'At 6:00 PM, The person is wearing a orange long sleeve shirt and indigo pants.')
+insert_data(10, 'https://www.google.com', 'At 9:15 AM, The person is wearing a red short sleeve shirt and white trousers.')
+
+
 # read_all_data()
 
-search_by('labrador')
+search_by('3:45 PM')
