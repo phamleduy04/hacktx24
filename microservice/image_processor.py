@@ -117,6 +117,7 @@ def detect_and_track_people(frame: np.ndarray) -> np.ndarray:
     clothes = {}
     #Crop the detected images and save
     for xyxy, mask, confidence, class_id, tracker_id, data in detections:
+        
         #Segment each of the cropped image
         cropped_img = sv.crop_image(image=frame, xyxy=xyxy)
         clothes[tracker_id] = detect_clothes(cropped_img)
@@ -138,12 +139,15 @@ def detect_and_track_people(frame: np.ndarray) -> np.ndarray:
 
     # Extract bounding box data
     box_data = []
+    image_height, image_width = frame.shape[:2]
     for xyxy, mask, confidence, class_id, tracker_id, data in detections:
+        x1, y1, x2, y2 = xyxy
+        normalized_xyxy = [x1 / image_width, y1 / image_height, x2 / image_width, y2 / image_height]
         box_data.append({
             "tracker_id": int(tracker_id),
             "class_id": int(class_id),
             "confidence": float(confidence),
-            "xyxy": xyxy.tolist(),  # Convert ndarray to list
+            "xyxy": normalized_xyxy,
             "clothes": clothes[tracker_id]
         })
 
