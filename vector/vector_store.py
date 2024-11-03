@@ -191,6 +191,6 @@ def start_server():
 
     # read_all_data()
 
-    search_by(conn, '3:45 PM')
+    # search_by(conn, '3:45 PM')
     
     return conn
