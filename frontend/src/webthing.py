@@ -41,6 +41,7 @@ async def send_video(websocket, path):
 
         # Draw boxes on the frame
         for item in boxes:
+            track_id=item['track_id']
             x, y, w, h = item['xyxy'][0]*frame_width, item['xyxy'][1]*frame_height, item['xyxy'][2]*frame_width, item['xyxy'][3]*frame_height
             color = (0, 255, 0)  # Green
             thickness = 2
