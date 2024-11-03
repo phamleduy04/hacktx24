@@ -20,7 +20,7 @@ export const Home: React.FC = () => {
         ws.onmessage = (event) => {
             const image = event.data;
             setImageSrc(`data:image/jpeg;base64,${image}`);
-            }
+        }
 
         ws.onclose = () => {
             console.log("WebSocket connection closed");
@@ -43,20 +43,22 @@ export const Home: React.FC = () => {
                 />
             </div>
             <div className="flex mb-4 w-full max-w-xl">
-                <input
-                    type="text"
-                    placeholder="Enter Query"
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                    className="flex-grow px-4 py-2 border-2 border-yellow-300 rounded-l-lg outline-none bg-gray-800 text-white placeholder-yellow-400"
-                />
-                <Button onClick={handleDetect} className="px-4 py-2 bg-yellow-500 border-l border-yellow-600 rounded-r-lg hover:bg-yellow-600 transition-colors ml-2">
-                    DETECT
-                </Button>
+                <form onSubmit={(e) => {e.preventDefault(); handleDetect();}} className="flex mb-4 w-full max-w-xl items-center">
+                    <input
+                        type="text"
+                        placeholder="Enter Query"
+                        value={query}
+                        onChange={(e) => setQuery(e.target.value)}
+                        className="flex-grow px-4 py-2 border-2 border-yellow-300 rounded-l-lg outline-none bg-gray-800 text-white placeholder-yellow-400"
+                    />
+                    <Button onClick={handleDetect} className="px-4 py-2 bg-yellow-500 border-l border-yellow-600 rounded-r-lg hover:bg-yellow-600 transition-colors ml-2 h-full">
+                        DETECT
+                    </Button>
+                </form>
             </div>
-            <div className="p-4 bg-gray-800 border border-yellow-500 rounded-lg mt-4">
+            {info != "" && <div className="p-4 bg-gray-800 border border-yellow-500 rounded-lg mt-4">
                 <p className="text-yellow-300">{info}</p>
-            </div>
+            </div>}
         </div>
     );
 };
