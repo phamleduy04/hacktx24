@@ -183,12 +183,3 @@ def pre_process_frame(frame: np.ndarray):
     #Make it brighter
     frame = cv2.convertScaleAbs(frame, alpha=1.2, beta=0)
     return frame
-
-image = cv2.imread("test333.png")
-image = pre_process_frame(image)
-result = detect_and_track_people(image)
-
-with sv.ImageSink(target_dir_path="result") as sink:
-    # result = pre_process_frame(result)
-    sink.save_image(image=result)
-    
