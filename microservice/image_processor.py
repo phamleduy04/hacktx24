@@ -1,5 +1,4 @@
 import numpy as np
-import cv2
 import supervision as sv
 from ultralytics import YOLO
 
@@ -48,12 +47,13 @@ def process_image(frame: np.ndarray):
     # Extract bounding box data
     box_data = []
     for xyxy, mask, confidence, class_id, tracker_id, data in detections:
+        print(xyxy)
         box_data.append({
             "tracker_id": int(tracker_id),
             "class_id": int(class_id),
             "confidence": float(confidence),
             "xyxy": xyxy.tolist(),
-            "clothes": clothes[tracker_id].tolist()
+            "clothes": clothes[tracker_id].tolist() if clothes[tracker_id] is not None else []
         })
 
     return box_data
