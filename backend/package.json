@@ -30,10 +30,12 @@
     "@langchain/core": "^0.3.17",
     "@langchain/ollama": "^0.1.1",
     "@types/jest": "^29.5.14",
+    "@types/ws": "^8.5.13",
     "express": "^4.21.1",
     "express-rate-limit": "^7.4.1",
     "morgan": "^1.10.0",
-    "ts-node": "^10.9.2"
+    "ts-node": "^10.9.2",
+    "ws": "^8.18.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.13.0",
