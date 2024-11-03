@@ -50,7 +50,34 @@ module.exports = {
     				'4': 'hsl(var(--chart-4))',
     				'5': 'hsl(var(--chart-5))'
     			}
-    		}
+    		},
+			keyframes: {
+				'in-up': {
+					'0%': {
+						transform: 'translateY(25%)',
+						opacity: 0
+					},
+					'100%': {
+						transform: 'translateY(0)',
+						opacity: 1
+					}
+				},
+				"max-h": {
+					"0%": {
+						maxHeight: "0",
+						opacity: 0
+					},
+					"100%": {
+						maxHeight: "100vh",
+						opacity: 1
+					}
+				}
+			},
+			animation: {
+				'in-up': 'in-up 0.3s ease-out',
+				"max-h": "max-h 1s ease-in-out"
+			}
+
     	}
     },
     plugins: [require("tailwindcss-animate")],

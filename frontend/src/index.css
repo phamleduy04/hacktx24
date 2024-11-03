@@ -64,3 +64,25 @@
     @apply bg-background text-foreground;
   }
 }
+
+.scroll {
+  scrollbar-width: thin; /* For Firefox */
+  scrollbar-color: rgba(68, 68, 68, 0.9) transparent; /* For Firefox: thumb and track color */
+
+  /* For Webkit (Chrome, Edge, Safari) */
+  &::-webkit-scrollbar {
+    width: 5px; /* Adjust scrollbar width */
+    height: 5px; /* Adjust scrollbar height for horizontal scrollbars */
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent; /* Transparent track */
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(68, 68, 68, 0.9); /* Semi-transparent dark thumb */
+    border-radius: 100%; /* Rounded corners on the scrollbar thumb */
+    border: 2px solid transparent; /* Optional: for invisible borders */
+    background-clip: content-box; /* Avoids coloring the borders */
+  }
+}

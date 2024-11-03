@@ -1,0 +1,32 @@
+{
+    "time": "07:45",
+    "people": [
+        {
+            "clothes": [
+                "T-shirt",
+                "jeans",
+                "sneakers"
+            ]
+        },
+        {
+            "clothes": [
+                "dress",
+                "high heels"
+            ]
+        },
+        {
+            "clothes": [
+                "suit",
+                "tie",
+                "leather shoes"
+            ]
+        },
+        {
+            "clothes": [
+                "sweatshirt",
+                "shorts",
+                "flip flops"
+            ]
+        }
+    ]
+}
