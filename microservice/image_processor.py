@@ -182,6 +182,7 @@ def get_json_result(frame: np.ndarray):
         coords = [ x_y / frame.shape[i % 2 == 0] for i, x_y in enumerate(xyxy)]
         normalized_coords[tracker_id] = coords   
         
+        # add to vector store db
         requests.post("https://vectorapi.hacktx24.tech/vector", json={"id": int(tracker_id), "img": base64_img, "description": f"{detect_res.names[class_id]} #{tracker_id} {clothes[tracker_id]}"})
     
     result = []
