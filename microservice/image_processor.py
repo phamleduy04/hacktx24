@@ -5,8 +5,15 @@ import requests
 import supervision as sv
 from ultralytics import YOLO
 from dominant_color import DominantColor
+import concurrent.futures
 
 from base64 import b64encode
+
+executor = concurrent.futures.ThreadPoolExecutor(max_workers=5)
+
+def post_to_vector_api(data):
+    requests.post("https://vectorapi.hacktx24.tech/vector", json=data)
+
 
 detect_model = YOLO("yolo11s.pt")
 clothes_model = YOLO("best.pt")
@@ -182,8 +189,14 @@ def get_json_result(frame: np.ndarray):
         coords = [ x_y / frame.shape[i % 2 == 0] for i, x_y in enumerate(xyxy)]
         normalized_coords[tracker_id] = coords   
         
-        # add to vector store db
-        requests.post("https://vectorapi.hacktx24.tech/vector", json={"id": int(tracker_id), "img": base64_img, "description": f"{detect_res.names[class_id]} #{tracker_id} {clothes[tracker_id]}"})
+        data = {
+            "id": int(tracker_id),
+            "img": base64_img,
+            "description": f"{detect_res.names[class_id]} #{tracker_id} {clothes[tracker_id]}"
+        }
+
+        # Submit the POST request to be run in the background
+        executor.submit(post_to_vector_api, data)
     
     result = []
     for class_id, tracker_id in zip(detections.class_id, detections.tracker_id):
