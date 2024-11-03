@@ -3,6 +3,7 @@ const port = app.get('port');
 
 const server = app.listen(port, onListening);
 server.on('error', onError);
+import { WebSocketServer } from 'ws';
 
 function onError(error: NodeJS.ErrnoException) {
     if (error.syscall !== 'listen') {
@@ -32,4 +33,6 @@ function onListening() {
     console.log(`Listening on ${bind}`);
 }
 
-export default server;
+const wss = new WebSocketServer({ server });
+
+export { server, wss };

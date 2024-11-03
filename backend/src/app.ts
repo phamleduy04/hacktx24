@@ -3,7 +3,6 @@ import * as path from 'path';
 import express from 'express';
 import logger from 'morgan';
 import rateLimit from 'express-rate-limit';
-
 // Routes
 import indexRouter from './routes/index';
 // Create Express server
@@ -21,6 +20,7 @@ const apiLimiter = rateLimit({
 });
 
 app.use(express.json());
+
 
 // Apply the rate limiting middleware to API calls only
 // app.use('/api', apiLimiter)
