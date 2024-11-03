@@ -171,13 +171,16 @@ def get_json_result(frame: np.ndarray):
         coords = [ x_y / frame.shape[i % 2 == 0] for i, x_y in enumerate(xyxy)]
         normalized_coords[tracker_id] = coords   
     
-    labels = [
-        f"{detect_res.names[class_id]} #{tracker_id} {clothes[tracker_id]} {normalized_coords[tracker_id]}"
-        for class_id, tracker_id
-        in zip(detections.class_id, detections.tracker_id)
-    ]
+    result = []
+    for class_id, tracker_id in zip(detections.class_id, detections.tracker_id):
+        text = f"{detect_res.names[class_id]} #{tracker_id} {clothes[tracker_id]}"
+        xyxy = normalized_coords[tracker_id]
+        result.append({
+            "text": text,
+            "xyxy": xyxy
+        })
 
-    return labels
+    return result
 
 def pre_process_frame(frame: np.ndarray):
     #Make it brighter
