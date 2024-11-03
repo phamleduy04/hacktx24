@@ -75,7 +75,7 @@ def save_to_vector_db(vector_response: VectorResponse):
     
     try:
     
-        print(vector_response)
+        # print(vector_response)
         
         # get time HH:MM AM/PM
         now = datetime.now()
