@@ -20,6 +20,8 @@ const apiLimiter = rateLimit({
   legacyHeaders: false,
 });
 
+app.use(express.json());
+
 // Apply the rate limiting middleware to API calls only
 // app.use('/api', apiLimiter)
 
