@@ -175,14 +175,14 @@ def get_json_result(frame: np.ndarray):
     clothes = {}
     normalized_coords = {}
     #Crop the detected images and save
+    base64_img = "data:image/jpeg;base64," + b64encode(cv2.imencode('.jpg', frame)[1]).decode()
+
     for xyxy, mask, confidence, class_id, tracker_id, data in detections:
         #Segment each of the cropped image
         cropped_img = sv.crop_image(image=frame, xyxy=xyxy)
         
         # convert ndarray to base64 string in format "data:image/jpeg;base64,...."
-        # base64_img = sv.ndarray_to_base64(cropped_img) # does not exist
-        base64_img = "data:image/jpeg;base64," + b64encode(cv2.imencode('.jpg', cropped_img)[1]).decode()
-        
+        # base64_img = sv.ndarray_to_base64(cropped_img) # does not exist        
         
         
         clothes[tracker_id] = detect_clothes(cropped_img)
