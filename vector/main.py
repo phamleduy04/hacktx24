@@ -28,7 +28,7 @@ def get_keywords(question: str) -> str:
 
 def get_friendly_response(db_descriptions: list, question: str) -> str:
     # make a post request to localhost:8000/chat
-    response = requests.post("http://localhost:3000/chat", json={"prompt": "This is the relevant history: " + " ".join(["Person #" + str(i[0]) + ": " + i[1] for i in db_descriptions]) + "\nUse the relevant history to answer the following question: " + question})
+    response = requests.post("http://localhost:3000/chat", json={"prompt": "This is the relevant history: " + " ".join(["Person #" + str(i[0]) + ": " + i[1] for i in db_descriptions]) + "\nUse the relevant history to answer the following question and if you can't find exact matches, use the closest relevant people: " + question})
     # return the response
     return response.text
 

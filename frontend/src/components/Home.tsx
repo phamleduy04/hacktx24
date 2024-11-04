@@ -186,7 +186,7 @@ export const Home: React.FC = () => {
 
     return (
         <div className="flex flex-col justify-start items-center h-screen max-h-screen overflow-hidden bg-gradient-to-br from-blue-500 to-purple-600">
-            <h1 className="text-center text-5xl font-extrabold mb-6 text-yellow-300 mt-10">SUS DETECTOR</h1>
+            <h1 className="text-center text-5xl font-extrabold mb-6 text-yellow-300 mt-10">ANGEL'S PROTECTION</h1>
 
             {/* <div className="w-full max-w-xl h-80 mb-2">
                 {imageSrc ? <img
